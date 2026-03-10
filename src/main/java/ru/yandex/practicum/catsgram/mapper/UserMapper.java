@@ -27,7 +27,7 @@ public final class UserMapper {
         dto.setId(user.getId());
         dto.setUsername(user.getUsername());
         dto.setEmail(user.getEmail());
-        dto.setRegistrationDate(Instant.now());
+        dto.setRegistrationDate(user.getRegistrationDate());
         return dto;
     }
 

@@ -50,7 +50,7 @@ public class PostService {
     }
 
     public PostDto updatePost(long postId, UpdatePostRequest request) {
-        if (request.getDescription() != null || !request.getDescription().isBlank()) {
+        if (request.getDescription() == null || request.getDescription().isBlank()) {
             throw new ConditionsNotMetException("Текст публикации не может быть пустым");
         }
         Post post = postRepository.findById(postId)

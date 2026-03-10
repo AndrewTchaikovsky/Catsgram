@@ -23,9 +23,9 @@ public class ImageRepository extends BaseRepository<Image> {
     public Image save(Image image) {
         long id = insert(
                 INSERT_QUERY,
-                image.getPostId(),
                 image.getOriginalFileName(),
-                image.getFilePath()
+                image.getFilePath(),
+                image.getPostId()
         );
         image.setId(id);
         return image;

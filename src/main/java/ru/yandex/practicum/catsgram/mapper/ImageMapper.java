@@ -24,7 +24,6 @@ public final class ImageMapper {
         dto.setId(image.getId());
         dto.setPostId(image.getPostId());
         dto.setOriginalFileName(image.getOriginalFileName());
-        dto.setOriginalFileName(image.getOriginalFileName());
         dto.setData(data);
         return dto;
     }

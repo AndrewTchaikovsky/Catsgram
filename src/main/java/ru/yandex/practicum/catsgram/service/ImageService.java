@@ -104,7 +104,7 @@ public class ImageService {
             file.transferTo(filePath);
             return filePath;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new ImageFileException("Ошибка сохранения файла");
         }
     }
 
