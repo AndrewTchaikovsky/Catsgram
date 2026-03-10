@@ -1,65 +1,34 @@
 package ru.yandex.practicum.catsgram.controller;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.catsgram.exception.ConditionsNotMetException;
-import ru.yandex.practicum.catsgram.exception.NotFoundException;
-import ru.yandex.practicum.catsgram.model.Post;
-
-import java.time.Instant;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import ru.yandex.practicum.catsgram.dto.NewPostRequest;
+import ru.yandex.practicum.catsgram.dto.PostDto;
+import ru.yandex.practicum.catsgram.dto.UpdatePostRequest;
+import ru.yandex.practicum.catsgram.service.PostService;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/posts")
 public class PostController {
-
-    private final Map<Long, Post> posts = new HashMap<>();
-
-    @GetMapping
-    public Collection<Post> findAll() {
-        return posts.values();
-    }
+    private final PostService postService;
 
     @PostMapping
-    public Post create(@RequestBody Post post) {
-        // проверяем выполнение необходимых условий
-        if (post.getDescription() == null || post.getDescription().isBlank()) {
-            throw new ConditionsNotMetException("Описание не может быть пустым");
-        }
-        // формируем дополнительные данные
-        post.setId(getNextId());
-        post.setPostDate(Instant.now());
-        // сохраняем новую публикацию в памяти приложения
-        posts.put(post.getId(), post);
-        return post;
+    @ResponseStatus(HttpStatus.CREATED)
+    public PostDto createPost(@RequestBody NewPostRequest postRequest) {
+        return postService.createPost(postRequest);
     }
 
-    // вспомогательный метод для генерации идентификатора нового поста
-    private long getNextId() {
-        long currentMaxId = posts.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+    @GetMapping("/{postId}")
+    @ResponseStatus(HttpStatus.OK)
+    public PostDto getPostById(@PathVariable("postId") long postId) {
+        return postService.getPostById(postId);
     }
 
-    @PutMapping
-    public Post update(@RequestBody Post newPost) {
-        // проверяем необходимые условия
-        if (newPost.getId() == null) {
-            throw new ConditionsNotMetException("Id должен быть указан");
-        }
-        if (posts.containsKey(newPost.getId())) {
-            Post oldPost = posts.get(newPost.getId());
-            if (newPost.getDescription() == null || newPost.getDescription().isBlank()) {
-                throw new ConditionsNotMetException("Описание не может быть пустым");
-            }
-            // если публикация найдена и все условия соблюдены, обновляем её содержимое
-            oldPost.setDescription(newPost.getDescription());
-            return oldPost;
-        }
-        throw new NotFoundException("Пост с id = " + newPost.getId() + " не найден");
+    @PutMapping("/{postId}")
+    public PostDto updatePost(@PathVariable("postId") long postId, @RequestBody UpdatePostRequest postRequest) {
+        return postService.updatePost(postId, postRequest);
     }
+
 }
